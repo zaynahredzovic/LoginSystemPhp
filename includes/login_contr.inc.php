@@ -4,9 +4,9 @@ declare(strict_types= 1);
 
 function isUsernameWrong(bool|array $result){
     if (!$result) {
-        return false;
-    }else{
         return true;
+    }else{
+        return false;
     };
 };
 

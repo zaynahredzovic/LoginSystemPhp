@@ -6,10 +6,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     require_once "dbh.inc.php";
 
+    
+
     try {
 
         require_once "login_model.onc.php";
         require_once "login_contr.inc.php";
+
+
 
         //ERROR HANDLERS
         $errors = [];
@@ -29,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         
 
-        require_once"config_session.inc.php";
+        require_once "config_session.inc.php";
 
         if($errors){
             $_SESSION["error_login"] = $errors;
@@ -46,9 +50,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION["user_username"] = htmlspecialchars($result["username"]) ;
 
         $_SESSION['last_regeneration'] = time();
-
-        header("location : ../index.php?login=success");
-
+        
+        header("location: ../index.php?login=success");
         $pdo = null;
         $stmt = null;
 
