@@ -8,7 +8,7 @@ class LoginModel{
     public function __construct() {
         $this->db = Database::getIstance();
     }
-    public function isInputEmpty(string $username, string $pwd){
+    public static function isInputEmpty(string $username, string $pwd){
         if(empty($username) || empty($pwd)){
             return true;
         }else{
