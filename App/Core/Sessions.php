@@ -69,8 +69,21 @@ class Sessions{
         $_SESSION['userUsername'] = htmlspecialchars($user["username"]);
 
         $_SESSION["lastRegeneration"] = time();
+    }
 
+    public static function sessionSignupErrors($errors, $company, $username){
+        if($errors){
+            $_SESSION["errorSignup"] = $errors;
+            $signupData = [
+                "company"=> $company,
+                "username"=> $username
+            ];
 
+            $_SESSION['signupData'] = $signupData;
+
+            header("location: index.php");
+            die();
+        } 
     }
 }
 

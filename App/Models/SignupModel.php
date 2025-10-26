@@ -1,7 +1,6 @@
 <?php
 namespace App\Models;
 use App\Core\Database;
-use PDO;
 final class SignupModel{
     private object $db;
     private string $table = 'logontbl';
@@ -11,7 +10,7 @@ final class SignupModel{
     }
 
     public function getUsername($username){
-        $query = "SELECT company FROM {$this->table} WHERE company =?;";
+        $query = "SELECT username FROM {$this->table} WHERE username =?;";
         $result= $this->db->read($query, [$username]);
         
         if(!$result){
