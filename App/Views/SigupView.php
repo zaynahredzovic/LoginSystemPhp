@@ -4,7 +4,7 @@ namespace App\Views;
 class SigupView{
     private array $errors;
 
-    private function __construct(){
+    public function __construct(){
         $errors=$this->errors;
     }
 
@@ -44,23 +44,7 @@ class SigupView{
     }
 }
 
-/*
-function signupInputs(){
 
-    if (isset($_SESSION["signup_data"]["company"]) && !isset($_SESSION["error_signup"]["username_taken"])) {
-        echo '<input type="text" name="company" placeholder="Company" value="'. $_SESSION["signup_data"]["company"] .'">';
-    }else {
-        echo '<input type="text" name="company" placeholder="Company">';
-    };
-
-    echo '<input type="password" name="pwd" placeholder="Password">';
-
-    if (isset($_SESSION["signup_data"]["email"]) && !isset($_SESSION["error_signup"]["email_used"]) && !isset($_SESSION["error_signup"]["invalid_email"])) {
-        echo '<input type="email" name="email" placeholder="E-mail" value="'. $_SESSION["signup_data"]["email"] .'">';
-    }else {
-        echo '<input type="email" name="email" placeholder="E-mail">';
-    };
-}
 
 
 

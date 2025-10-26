@@ -8,7 +8,7 @@ class Sessions{
     public static function start(){
         session_set_cookie_params([
             'lifetime' => 1800,
-            'domain'=> $_ENV['DB_HOST'], //not sure if correct
+            'domain'=> 'localhost', //not sure if correct
             'path' => '/',
             'secure'    => true,
             'httponly'=> true,

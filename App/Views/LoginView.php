@@ -7,7 +7,7 @@ use App\Core\Sessions;
 class LoginView{
     private array $errors;
 
-    private function __construct(){
+    public function __construct(){
         $errors = $this->errors;
     }
 

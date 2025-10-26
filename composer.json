@@ -1,0 +1,15 @@
+{
+    "name": "korisnik/loginsystem",
+    "autoload": {
+        "psr-4": {
+            "App\\": "App/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Zaynah Redzovic",
+            "email": "zaynahredzovic@gmail.com"
+        }
+    ],
+    "require": {}
+}
