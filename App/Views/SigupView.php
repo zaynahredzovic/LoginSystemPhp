@@ -2,12 +2,6 @@
 namespace App\Views;
 
 class SigupView{
-    private array $errors;
-
-    public function __construct(){
-        $errors=$this->errors;
-    }
-
     public function signupInputs(){
         if (isset($_SESSION["signupData"]["company"]) && !isset($_SESSION["errorSignup"]["usernameTaken"])) {
             echo '<input type="text" name="company" placeholder="Company" value="'. $_SESSION["signupData"]["company"] .'">';

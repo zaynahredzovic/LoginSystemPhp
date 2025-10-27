@@ -22,7 +22,7 @@ Sessions::start();
 </head>
 <body>
     
-    <form action="includes/login.inc.php" method="post">
+    <form action="App\Core\Login.php" method="post">
         <h3>Login</h3>
         <input type="text" name="email" placeholder="Email">
         <input type="password" name="pwd" placeholder="Password">
@@ -34,7 +34,7 @@ Sessions::start();
         $login->checkLoginErrors();
     ?>
 
-    <form action="includes/signup.inc.php" method="post">
+    <form action="App\Core\Signup.php" method="post">
         <h3>Signup</h3>
 
     <?php

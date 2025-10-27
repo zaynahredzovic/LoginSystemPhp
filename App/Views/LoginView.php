@@ -5,12 +5,6 @@ namespace App\Views;
 use App\Core\Sessions;
 
 class LoginView{
-    private array $errors;
-
-    public function __construct(){
-        $errors = $this->errors;
-    }
-
     public function checkLoginErrors(){
         if(isset($_SESSION['errorLogin'])){
             $errors = $_SESSION['errorLogin'];
