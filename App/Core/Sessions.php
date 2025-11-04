@@ -8,27 +8,32 @@ class Sessions{
     public static function start(){
         session_set_cookie_params([
             'lifetime' => 1800,
-            'domain'=> 'localhost', //not sure if correct
+            'domain'=> false, 
             'path' => '/',
-            'secure'    => true,
+            'secure'    => false,
             'httponly'=> true,
+            'samesite' => 'Strict'
         ]);
 
-        if(session_start()===PHP_SESSION_NONE){
+        if(session_status()===PHP_SESSION_NONE){
             session_start();
+        }
+
+        if(!isset($_SESSION['lastRegeneration'])){
+            $_SESSION['lastRegeneration'] = time();
         }
     }
 
     public function checkSession() {
         if (!isset($_SESSION['lastRegeneration'])) {
-            $this->regenerateSessionId_loggedIn();
+            self::regenerateSessionId_loggedIn();
         } else {
             if (!isset($_SESSION['lastRegeneration'])) {
-                $this->regenerateSessionId();
+                self::regenerateSessionId();
             } else {
                 $interval = 60*30;
                 if(time()-$_SESSION['lastRegeneration']>=$interval){
-                    $this->regenerateSessionId();
+                    self::regenerateSessionId();
                 }
             }
         }
@@ -40,35 +45,34 @@ class Sessions{
     }
 
     public function regenerateSessionId_loggedIn() {
+        $userId = $_SESSION['userId'] ?? null;
         session_regenerate_id(true);
 
-        $userId = $_SESSION['userId'];
-        $newSessionId = session_create_id();
-        $sessionId = $newSessionId . "_". $userId;
+        if($userId){
+            $newSessionId = session_create_id();
+            $sessionId = $newSessionId . "_". $userId;
+            session_id($sessionId);
+        }
 
-        session_id($sessionId);
-
-        $_SESSION['lastRegeneration'] = time();
+        $sessionId['lastRegeneration'] = time();
     }
 
     public static function sessionLoginErrors($errors){
         if($errors){
             $_SESSION["errorLogin"] = $errors;
-
-            header("location: index.php");
-            die();
         }
     }
 
     public static function newLoginSession($user){
+        session_regenerate_id(true);
+
         $newSessionId = session_create_id();
-        $sessionId = $newSessionId ."_". $user;
+        $sessionId = $newSessionId . "_" . $user['id'];
         session_id($sessionId);
 
-        $_SESSION['userId'] = $user["id"];
-        $_SESSION['userUsername'] = htmlspecialchars($user["username"]);
-
-        $_SESSION["lastRegeneration"] = time();
+        $_SESSION['userId'] = $user['id'];
+        $_SESSION['userUsername'] = htmlspecialchars($user['username'] ?? '');
+        $_SESSION['lastRegeneration'] = time();
     }
 
     public static function sessionSignupErrors($errors, $company, $username){
@@ -80,10 +84,22 @@ class Sessions{
             ];
 
             $_SESSION['signupData'] = $signupData;
-
-            header("location: index.php");
-            die();
         } 
     }
-}
 
+    public function isLoggedIn():bool {
+        return isset($_SESSION['user_id']);
+    }
+
+    public static function logout(){
+        $_SESSION=[];
+        if(ini_get("session.use_cookies")){
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time()-42000,
+                $params['path'], $params['domain'],
+                $params['secure'], $params['httponly']
+        );
+        session_destroy();
+        }
+    }
+}
