@@ -15,22 +15,46 @@ class LoginModel{
             return false;
         };
     }
-    public function getUser($username, $password){
+    public function getUser($username){
         $query = "SELECT * FROM {$this->table} WHERE username=?;";
         $result = $this->db->read($query, [$username]);
 
-        if(!$result){
+        if(!$result || count($result)===0){
             return null;
         }
 
-        $user = $result[0];
-
-        if(password_verify($password, $user['password'])){
-            return $user;
-        }
-
-        return null;
+        return $result[0];
     }
 
+    public function processLogin($email, $password) {
+        $errors = [];
+
+        if($this->isInputEmpty($email, $password)){
+            $errors["emptyInput"] = "Fill in all fields";
+        }
+
+        $user = $this->getUser($email);
+
+        if(!$user){
+            $errors["loginIncorrect"] = "Incorrect login info!";
+        }
+
+        if(!password_verify($password, $user['password'])){
+            $errors["loginIncorrect"] = "Incorrect login info!";
+        }
+
+        if (empty($errors)) {
+            return [
+                'success' => true,
+                'user' => $user
+            ];
+        } else {
+            return[
+                'success' =>false,
+                'errors' => $errors
+            ];
+        }
+        
+    }
 }
 

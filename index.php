@@ -1,54 +1,58 @@
 <?php
-require_once "vendor/autoload.php";
 
-use App\Core\Login;
-use App\Core\Signup;
-use App\Core\Sessions;
-use App\Views\SigupView;
-use App\Views\LoginView;
+require_once __DIR__ . "/vendor/autoload.php";
 
-Sessions::start();
+use FastRoute\RouteCollector;
+use FastRoute\Dispatcher;
+use function FastRoute\simpleDispatcher;
 
-?>
+\App\Core\Sessions::start();
 
-<!DOCTYPE html>
-<html lang="en">
+$uri = $_SERVER['REQUEST_URI'];
+$basePath = '/LoginSystem';
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
-    <title>System</title>
-</head>
-<body>
-    
-    <form action="App\Core\Login.php" method="post">
-        <h3>Login</h3>
-        <input type="text" name="email" placeholder="Email">
-        <input type="password" name="pwd" placeholder="Password">
-        <button>Login</button>
-    </form>
+if (strpos($uri, $basePath) === 0) {
+    $uri = substr($uri, strlen($basePath));
+}
 
-    <?php
-        $login = new LoginView();
-        $login->checkLoginErrors();
-    ?>
+$uri = parse_url($uri, PHP_URL_PATH);
 
-    <form action="App\Core\Signup.php" method="post">
-        <h3>Signup</h3>
 
-    <?php
-        $signup = new SigupView();
-        $signup->signupInputs();
-    ?>
+if (empty($uri) || $uri[0] !== '/') {
+    $uri = '/' . $uri;
+}
 
-        <button>Signup</button>
-    </form>
+$dispatcher = simpleDispatcher(function(RouteCollector $r) {
+    $r->addRoute('GET', '/', ['App\Controllers\LoginController', 'index']);
+    $r->addRoute('POST', '/login', ['App\Controllers\LoginController', 'login']);
+    $r->addRoute('GET', '/signup', ['App\Controllers\SignupController', 'index']);
+    $r->addRoute('POST', '/signup', ['App\Controllers\SignupController', 'register']);
+});
 
-    <?php
-        $signup->checkSignupErrors();
+$httpMethod = $_SERVER['REQUEST_METHOD'];
+$routeInfo = $dispatcher->dispatch($httpMethod, $uri);
 
-    ?>
+switch ($routeInfo[0]) {
+    case Dispatcher::NOT_FOUND:
+        http_response_code(404);
+        echo "404 Not Found";
+        break;
+    case Dispatcher::METHOD_NOT_ALLOWED:
+        http_response_code(405);
+        echo "405 Method Not Allowed";
+        break;
+    case Dispatcher::FOUND:
+        $handler = $routeInfo[1];
+        $vars = $routeInfo[2];
 
-</body>
-</html>
+        try {
+            $controller = new $handler[1];
+            $method = $handler[1];
+            $controller->$method($vars);
+        } catch (Throwable $e) {
+            http_response_code(500);
+            echo "500 Internal Server Error";
+            error_log("Contoller error: " . $e->getMessage());
+        }
+        break;
+}
