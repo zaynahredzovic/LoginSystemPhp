@@ -1,40 +1,30 @@
 <?php
 namespace App\Controllers;
+
+use App\Views\SignupView;
 use App\Models\SignupModel;
+use App\Core\Sessions;
 
 class SignupController{
-    private string $company;
-    private string $username; //email in pratice, username in db;
-    private string $password;
-
-
-    public function isInputEmpty($company,$username, $password){
-        if (empty($company) || empty($username) || empty($password)){
-            return true;
-        }else{
-            return false;
-        }
+    public function index(){
+        (new SignupView())->render();
     }
 
-    public function isEmailValid($username){
-        if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
-            return true;
+    public function register(){
+        $company = $_POST['company'] ?? '';
+        $username = $_POST['username'] ?? '';
+        $password = $_POST['password'] ?? '';
+
+        $model = new SignupModel();
+        $result = $model->processSignup($company, $username, $password);
+
+        if($result['success']){
+            header("Location: /?signup=success");
+            exit;
         } else {
-            return false;
-        }        
-    }
-
-    public function isEmailTaken($username) {
-        $user = new SignupModel();
-        if($user->getUsername($username)){
-            return true;
-        }else{
-            return false;
+            Sessions::sessionSignupErrors($result['errors'], $company, $username);
+            header("Location: /signup");
+            exit;
         }
-    }
-
-    public function createUser($company, $username, $password){
-        $user = new SignupModel();
-        $user->setUser($company, $username, $password);
     }
 }

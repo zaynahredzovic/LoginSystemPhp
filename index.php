@@ -46,7 +46,7 @@ switch ($routeInfo[0]) {
         $vars = $routeInfo[2];
 
         try {
-            $controller = new $handler[1];
+            $controller = new $handler[0];
             $method = $handler[1];
             $controller->$method($vars);
         } catch (Throwable $e) {
